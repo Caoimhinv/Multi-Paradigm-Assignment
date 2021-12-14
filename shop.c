@@ -222,14 +222,10 @@ void printCustomer(bool upd) {
 				if(cost > c.budget){
 					qb = c.budget / c.shoppingList[i].product.price;
 				}
-				qb = checkProductStock(c.shoppingList[i].product.name, qb);
-				
-				cost = qb * c.shoppingList[i].product.price;
-				
-				c.budget -= cost;
-				
+				qb = checkProductStock(c.shoppingList[i].product.name, qb);				
+				cost = qb * c.shoppingList[i].product.price;				
+				c.budget -= cost;				
 				s.cash += cost;
-
 				printf("QUANTITY PURCHASED: %d\n", qb);
 				printf("TOTAL ITEM COST: EUR %.2f\n", cost);
                 printf("- - - - - - - - \n");
