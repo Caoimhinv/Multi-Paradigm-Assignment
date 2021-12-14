@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 
+// structs/containers for the various aspects of the shop simulation
 struct Product {
     char* name;
     double price;
@@ -28,27 +29,18 @@ struct Customer {
     int index;
 };
 
+// create global variables
 struct Customer c;
 struct Shop s;
 
+// function to print product info
 void printProduct(struct Product p) {   
     printf("---------------\n");
     printf("PRODUCT NAME: %s \nPRODUCT PRICE: €%.2f\n", p.name, p.price);
-    printf("---------------\n");
+    printf("- - - - - - - - -\n");
     }
 
-// void printCustomer() {
-//     printf("**********\n");
-//     printf("CUSTOMER NAME: %s\nCUSTOMER BUDGET: €%.2f\n", c.name, c.budget);
-//     printf("**********\n");
-//     for(int i = 0; i < c.index; i++) {
-//         printProduct(c.shoppingList[i].product);
-//         printf("%s ORDERS %d of ABOVE PRODUCT\n", c.name, c.shoppingList[i].quantity);
-//         double cost = c.shoppingList[i].quantity * c.shoppingList[i].product.price;
-//         printf("The cost to %s will be €%.2f\n", c.name, cost);
-//         }
-//     }
-
+// reading in the stock.csv file
 struct Shop createAndStockShop() {
     FILE * fp;
     char * line = NULL;
@@ -77,17 +69,19 @@ struct Shop createAndStockShop() {
     return s;
 }
 
+// function to print shop stock
 void printShop() {    
-    printf("\n---------------\n");
+    printf("//////////\n");
     printf("Stock list\n");
-    printf("---------------\n");
+    printf("//////////\n");
     printf("Shop has a float of €%.2f\n", s.cash);
     for (int i = 0; i < s.index; i++) {
         printProduct(s.stock[i].product);
-        printf("The shop has %d of the above in stock\n", s.stock[i].quantity);
+        printf("The shop has %d in stock\n", s.stock[i].quantity);
     }
 }
 
+// checks product stock
 int checkProductStock(char *n, int order) {
 	for (int i =0; i < s.index; i++) {
 		struct ProductStock product = s.stock[i];
@@ -106,6 +100,7 @@ int checkProductStock(char *n, int order) {
 	return -1;
 }
 
+// finds price of product
 double findProductPrice(char *n) {
 	for (int i = 0; i < s.index; i++) {
 		struct Product product = s.stock[i].product;
@@ -117,6 +112,7 @@ double findProductPrice(char *n) {
 	return -1;
 }
 
+// reads in customer.csv file
 struct Customer createCustomer() {
     FILE *fp;
     char *line = NULL;
@@ -128,7 +124,6 @@ struct Customer createCustomer() {
         printf("File not found\n");
         exit(EXIT_FAILURE);
         }
-// read == ????
         getline(&line, &len, fp);
         char *n = strtok(line, ","); 
         char *b = strtok(NULL, ","); 
@@ -209,12 +204,12 @@ void liveMode() {
             while (select != 0);
     }
 
+// does the shopping via the shopping list contained in customer.csv
 void printCustomer(bool upd) {
     printf("////////////////////////\n");
 	printf("%s's shopping list\n", c.name);
     printf("////////////////////////\n");
 	printf("Budget: €%.2f\n", c.budget);
-    printf("----------\n");
 	int qb; 
 	for(int i = 0; i < c.index; i++){
 		qb = c.shoppingList[i].quantity;
@@ -237,8 +232,10 @@ void printCustomer(bool upd) {
 
 				printf("QUANTITY PURCHASED: %d\n", qb);
 				printf("TOTAL ITEM COST: EUR %.2f\n", cost);
+                printf("- - - - - - - - \n");
 				printf("ADJUSTED BUDGET: EUR %.2f\n", c.budget);
-				printf("ADJUSTED SHOP FLOAT: EUR %.2f", s.cash);
+				printf("ADJUSTED SHOP FLOAT: EUR %.2f\n", s.cash);
+                printf("---------------\n");
 				if (c.shoppingList[i].quantity != qb){
 					printf("\nUnable to fulfill complete order on this item due to insufficient funds / stock.");
 				}
@@ -247,19 +244,21 @@ void printCustomer(bool upd) {
 			}	
 			else {
 				// Relays the information to the user
-				printf("TOTAL ITEM COST: EUR €%.2f", cost);
+				printf("TOTAL ITEM COST: EUR €%.2f\n", cost);
+                printf("- - - - - - - - \n");
 			}
 		}	
 		else {
 			printf("Sorry, shop does not stock %s.", c.shoppingList[i].product.name);
 		}
-		printf("\n-------------\n");
 	}
 }
 
+// could have done this from the start I guess!
 struct Shop shop;
 struct Customer customer;
 
+// main program with menu, etc.
 int main(void) 
 {
 	shop = createAndStockShop();
@@ -279,6 +278,7 @@ int main(void)
 		printf("0 - Exit\n");
 		printf("\nPlease make a selection: \n");
 		scanf("%d", &menuSelect);
+        // https://www.programiz.com/c-programming/c-switch-case-statement
 		switch (menuSelect){
 
 			case 1:{

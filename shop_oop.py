@@ -16,10 +16,10 @@ class ProductStock:
         self.quantity = quantity
     
     def name(self):
-        return self.product.name;
+        return self.product.name
     
     def unit_price(self):
-        return self.product.price;
+        return self.product.price
         
     def cost(self):
         return self.unit_price() * self.quantity
