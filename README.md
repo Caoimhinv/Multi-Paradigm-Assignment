@@ -6,7 +6,7 @@
 
 ## ///---The Shop---///
 
-![shop]('/Images/shop1.jpg')
+![shop_image]('/Images/shop1.png')
 
 ---
 

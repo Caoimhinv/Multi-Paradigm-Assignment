@@ -48,11 +48,12 @@ struct Shop createAndStockShop() {
     size_t read;
     fp = fopen("stock.csv", "r");
     if (fp == NULL) {
+        printf("I can't access csv file? Gonna have to close down now. Try again later!");
         exit(EXIT_FAILURE);
-    };
+        }
         getline(&line, &len, fp);
-        double cash = atof(line);
-        s.cash = cash;
+        double shopFloat = atof(line);
+        s.cash = shopFloat;
 
     while ((read = getline(&line, &len, fp)) != -1) {
         char *n = strtok(line, ",");
@@ -150,23 +151,34 @@ struct Customer createCustomer() {
 
 // *** LIVE MODE ***
 void liveMode() {
-    struct Shop s;
-    double myBudget, totalCost;
+    double myBudget, totalCost, totalBill;
     int qr, qb, select;
     printf("What is your budget?\n");
     scanf("%lf", &myBudget);
         do {
-            printf("Welcome to my shop");
-            printf("Your current budget is %.2f.\nPlease select what you would like to buy from the list below:\n\n", myBudget);
+            printf("\n//////////////////////\n");
+            printf("Welcome to the C shop LIVE!\n");
+            printf("//////////////////////\n");
+            printf("Your current budget is €%.2f.\nPlease select what you would like to buy from the list below:\n\n", myBudget);
             for(int i=0; i < s.index; i++) {
-                printf("%d - %s @ %.2f each.\n", i + 1, s.stock[i].product.name, findProductPrice(s.stock[i].product.name));
+                printf("%d - %s @ €%.2f each.\n", i + 1, s.stock[i].product.name, findProductPrice(s.stock[i].product.name));
             }
+            printf("99 - finish shopping and print total bill\n");
             printf("0 - Exit Live Mode");
             printf("\nPlease make your selection: ");
             scanf("%d", &select);
             switch(select) {
                 case 0: {
-                    printf("Thank you for choosing Live Mode. Come again soon and have a nice day!");
+                    printf("\n--------------------\n");
+                    printf("Come again soon and have a nice day!\n");
+                    printf("--------------------\n");
+                    break;
+                }
+                case 99: {
+                    printf("\n--------------------\n");
+                    printf("Your total bill is €%.2f.\n", totalBill);
+                    printf("Thank you for your custom. Please come again soon!\n");
+                    printf("--------------------\n");
                     break;
                 }
                 default: {
@@ -188,20 +200,23 @@ void liveMode() {
                     totalCost = qb * findProductPrice(s.stock[select-1].product.name);
 
                     myBudget -= totalCost;
+                    totalBill += totalCost;
+                    s.cash += totalCost;
 	    			printProduct(s.stock[select-1].product);
 	    			printf("QUANTITY REQUIRED: %d\n", qr);
 	    			printf("QUANTITY PURCHASED: %d\n", qb);
-	    			printf("TOTAL ITEM COST: EUR %.2f\n", totalCost);
-	    			printf("ADJUSTED BUDGET: EUR %.2f\n", myBudget);
-	    			printf("ADJUSTED SHOP FLOAT: EUR %.2f", s.cash);
+	    			printf("TOTAL ITEM COST: €%.2f\n", totalCost);
+	    			printf("ADJUSTED BUDGET: €%.2f\n", myBudget);
+	    			printf("(ADJUSTED SHOP FLOAT: €%.2f)\n", s.cash);
+                    printf("- - - - - - - - - - - - - -\n");
+                    printf("TOTAL BILL SO FAR: €%.2f\n", totalBill);
                     if (qr != qb) {
-                        printf("\nWe are unable to fulfill order on this item because of insufficient funds/stock");
-                    }
-                    printf("**********");
+                        printf("\n****We are unable to satisfy this order in full due to insufficient funds/stock****\n");
+                        }
                     }
                 }
             }  
-            while (select != 0);
+            while (select != 0 && select != 99);
     }
 
 // does the shopping via the shopping list contained in customer.csv
@@ -233,7 +248,7 @@ void printCustomer(bool upd) {
 				printf("ADJUSTED SHOP FLOAT: EUR %.2f\n", s.cash);
                 printf("---------------\n");
 				if (c.shoppingList[i].quantity != qb){
-					printf("\nUnable to fulfill complete order on this item due to insufficient funds / stock.");
+					printf("\nUnable to fulfill order on this item due to insufficient funds/stock.");
 				}
 				c.shoppingList[i].quantity -= qb;				
 
@@ -245,7 +260,7 @@ void printCustomer(bool upd) {
 			}
 		}	
 		else {
-			printf("Sorry, shop does not stock %s.", c.shoppingList[i].product.name);
+			printf("Sorry, we do not stock %s. I've tried to fulfill the rest of your order.\n", c.shoppingList[i].product.name);
 		}
 	}
 }
@@ -290,18 +305,20 @@ int main(void)
 				break;
 			}
 			case 4:{
-				printf("\nYou are now entering LIVE Mode!\n");
+                printf("\n////////////////////////////////");
+				printf("\nYou are now entering LIVE MODE!\n");
+                printf("////////////////////////////////\n");
 				liveMode();
 				break;
 			}
 			case 5:{
 				shop = createAndStockShop();
-				printf("\n*** Shop now reset. ***\n");
+				printf("\n***Shop now reset***\n");
 				break;
 			}
 			case 6:{
 				customer = createCustomer();
-				printf("\n*** Customer now reset. ***!\n");
+				printf("\n***Customer now reset***!\n");
 				break;
 			}
 			case 0:{
