@@ -6,7 +6,7 @@
 
 ### The Shop
 
-![shop_image]('./Images/shop1.png')
+![shop_image](./Images/shop1.png)
 
 ---
 <br>
