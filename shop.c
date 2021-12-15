@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 
-// structs/containers for the various aspects of the shop simulation
+// structs/containers for the various elements of the shop simulation
 struct Product {
     char* name;
     double price;
@@ -25,11 +25,11 @@ struct Shop {
 struct Customer {
     char* name;
     double budget;
-    struct ProductStock shoppingList[10];
+    struct ProductStock shoppingList[20];
     int index;
 };
 
-// create global variables
+// create global variables to save rewriting multiple times
 struct Customer c;
 struct Shop s;
 
@@ -48,10 +48,10 @@ struct Shop createAndStockShop() {
     size_t read;
     fp = fopen("stock.csv", "r");
     if (fp == NULL) {
-        printf("I can't access csv file? Gonna have to close down now. Try again later!");
+        printf("I can't access csv file? Gonna have to close down now. Please try again!");
         exit(EXIT_FAILURE);
         }
-        getline(&line, &len, fp);
+        read = getline(&line, &len, fp);
         double shopFloat = atof(line);
         s.cash = shopFloat;
 
@@ -82,7 +82,7 @@ void printShop() {
     }
 }
 
-// checks product stock
+// checks product stock. Updates if necessary
 int checkProductStock(char *n, int order) {
 	for (int i =0; i < s.index; i++) {
 		struct ProductStock product = s.stock[i];
@@ -98,6 +98,7 @@ int checkProductStock(char *n, int order) {
 			return order;
 		}
 	}
+    // error if stock not found
 	return -1;
 }
 
@@ -114,18 +115,19 @@ double findProductPrice(char *n) {
 }
 
 // reads in customer.csv file
-struct Customer createCustomer() {
+struct Customer createCustomer(char *path_to_customer) {
     FILE *fp;
     char *line = NULL;
     size_t len = 0;
     size_t read;
         c.index = 0;
-    fp = fopen("customer.csv", "r"); 
+    // ***insert customer2.csv or customer3.csv for alternate outcomes
+    fp = fopen(path_to_customer, "r");
     if (fp == NULL) {
-        printf("File not found\n");
+            printf("I can't access csv file? Gonna have to close down now. Please try again!");
         exit(EXIT_FAILURE);
         }
-        getline(&line, &len, fp);
+        read = getline(&line, &len, fp);
         char *n = strtok(line, ","); 
         char *b = strtok(NULL, ","); 
         char *custName = malloc(sizeof(char) * 50); 
@@ -145,9 +147,9 @@ struct Customer createCustomer() {
 		shopList.product.price = findProductPrice(name);
 		shopList.quantity = quantity;
 		c.shoppingList[c.index++] = shopList;
-    };
+    }
     return c;
-};
+}
 
 // *** LIVE MODE ***
 void liveMode() {
@@ -157,7 +159,7 @@ void liveMode() {
     scanf("%lf", &myBudget);
         do {
             printf("\n//////////////////////\n");
-            printf("Welcome to the C shop LIVE!\n");
+            printf("Welcome to the C shop LIVE SHOPPING MODE!\n");
             printf("//////////////////////\n");
             printf("Your current budget is €%.2f.\nPlease select what you would like to buy from the list below:\n\n", myBudget);
             for(int i=0; i < s.index; i++) {
@@ -216,6 +218,7 @@ void liveMode() {
                     }
                 }
             }  
+            // exit if 0 or 99 is entered
             while (select != 0 && select != 99);
     }
 
@@ -226,11 +229,11 @@ void printCustomer(bool upd) {
     printf("////////////////////////\n");
 	printf("Budget: €%.2f\n", c.budget);
 	int qb; 
+    double cost, totalBill;
 	for(int i = 0; i < c.index; i++){
 		qb = c.shoppingList[i].quantity;
 		printProduct(c.shoppingList[i].product);
 		printf("QUANTITY REQUIRED: %d\n", c.shoppingList[i].quantity);
-		double cost;
 		if (c.shoppingList[i].product.price > -1){
 			cost = qb * c.shoppingList[i].product.price; 
 			if (upd){
@@ -241,51 +244,50 @@ void printCustomer(bool upd) {
 				cost = qb * c.shoppingList[i].product.price;				
 				c.budget -= cost;				
 				s.cash += cost;
+                totalBill += cost;
 				printf("QUANTITY PURCHASED: %d\n", qb);
-				printf("TOTAL ITEM COST: EUR %.2f\n", cost);
+				printf("TOTAL ITEM COST: €%.2f\n", cost);
                 printf("- - - - - - - - \n");
-				printf("ADJUSTED BUDGET: EUR %.2f\n", c.budget);
-				printf("ADJUSTED SHOP FLOAT: EUR %.2f\n", s.cash);
+				printf("ADJUSTED BUDGET: €%.2f\n", c.budget);
+				printf("ADJUSTED SHOP FLOAT: €%.2f\n", s.cash);
+                printf("---------------\n");
+                printf("TOTAL BILL: €%.2f\n", totalBill);
                 printf("---------------\n");
 				if (c.shoppingList[i].quantity != qb){
-					printf("\nUnable to fulfill order on this item due to insufficient funds/stock.");
+					printf("\nSorry! Can't fulfill order on this item due to insufficient funds/stock.\n");
 				}
 				c.shoppingList[i].quantity -= qb;				
-
 			}	
 			else {
-				// Relays the information to the user
-				printf("TOTAL ITEM COST: EUR €%.2f\n", cost);
+				printf("TOTAL ITEM COST: €%.2f\n", cost);
                 printf("- - - - - - - - \n");
 			}
 		}	
 		else {
-			printf("Sorry, we do not stock %s. I've tried to fulfill the rest of your order.\n", c.shoppingList[i].product.name);
+			printf("Sorry, we do not stock %s!\n", c.shoppingList[i].product.name);
 		}
 	}
 }
 
-// could have done this from the start I guess!
-struct Shop shop;
-struct Customer customer;
-
 // main program with menu, etc.
-int main(void) 
-{
-	shop = createAndStockShop();
-	customer = createCustomer();
+void mainMenu(struct Shop s) {
 	int menuSelect;
 	do {
         printf("\n/////////////////////\n");
 		printf("WELCOME TO THE C SHOP\n");
         printf("/////////////////////\n");
 		printf("\nPlease select from the following:\n\n");
-		printf("1 - Show shop stock\n"); 
-		printf("2 - Show current shopping list\n"); 
-		printf("3 - Shop with shopping list\n"); 
-		printf("4 - Shop in Live Mode\n"); 
-		printf("5 - Reset shop stock and float\n"); 
-		printf("6 - Reset customer shopping list and budget\n"); 
+		printf("1 - Show shop's current stock and float\n"); 
+		printf("2 - Show Caoimhin's shopping list\n"); 
+        // other shopping lists?
+		printf("3 - Shop with Caoimhin's shopping list\n"); 
+        printf("4 - Shop with PJs's shopping list\n"); 
+        printf("5 - Shop with JimBob's shopping list\n"); 
+        // options for other shopping lists?
+		printf("6 - Shop in Live Mode\n"); 
+        // get rid of resets?
+		// printf("7 - Reset shop stock and float\n"); 
+		// printf("8 - Reset customer budget\n"); 
 		printf("0 - Exit\n");
 		printf("\nPlease make a selection: \n");
 		scanf("%d", &menuSelect);
@@ -297,32 +299,44 @@ int main(void)
 				break;
 			}
 			case 2:{
+                struct Customer customer_A = createCustomer("customer1.csv");
 				printCustomer(false);
 				break;
 			}
 			case 3:{
+                struct Customer customer1 = createCustomer("customer1.csv");
 				printCustomer(true);
 				break;
 			}
-			case 4:{
+            case 4:{
+                struct Customer customer2 = createCustomer("customer2.csv");
+				printCustomer(true);
+				break;
+			}
+            case 5:{
+                struct Customer customer3 = createCustomer("customer3.csv");
+				printCustomer(true);
+				break;
+			}
+			case 6:{
                 printf("\n////////////////////////////////");
-				printf("\nYou are now entering LIVE MODE!\n");
+				printf("\nYou are now entering our LIVE SHOPPING MODE!\n");
                 printf("////////////////////////////////\n");
 				liveMode();
 				break;
 			}
-			case 5:{
-				shop = createAndStockShop();
-				printf("\n***Shop now reset***\n");
-				break;
-			}
-			case 6:{
-				customer = createCustomer();
-				printf("\n***Customer now reset***!\n");
-				break;
-			}
+			// case 7:{
+			// 	s = createAndStockShop();
+			// 	printf("\n***Shop stock and float now reset***\n");
+			// 	break;
+			// }
+			// case 8:{
+			// 	c = createCustomer();
+			// 	printf("\n***Customer budget now reset***!\n");
+			// 	break;
+			// }
 			case 0:{
-				printf("\nGoodbye %s and thank you for your custom!\n", customer.name);
+				printf("\nBye %s! Thank's for your custom!\nCome again soon!\n", c.name);
 				break;
 			}
 			default:{
@@ -331,6 +345,17 @@ int main(void)
 			}
 		}
 	}
-	while (menuSelect != 0);
-    return 0;
+	    while (menuSelect != 0);
+    // return 0;
+}
+// main method
+int main()
+{
+
+  // create shop
+  struct Shop newShop = createAndStockShop();
+
+  mainMenu(newShop);
+
+  return 0;
 }
