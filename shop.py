@@ -9,12 +9,12 @@ class Product:
     name: str
     price: float = 0.0
 
-@dataclass 
+@dataclass
 class ProductStock:
     product: Product
     quantity: int
 
-@dataclass 
+@dataclass
 class Shop:
     cash: float = 0.0
     stock: List[ProductStock] = field(default_factory=list)
@@ -26,15 +26,16 @@ class Customer:
     shoppingList: List[ProductStock] = field(default_factory=list)
 
 # global variables
-c = Customer
-s = Shop
+c = Customer()
+s = Shop()
 
-# function to print product  
+# function to print product
 def printProduct(p):
-    print("---------------\n")
-    print(f'\nPRODUCT NAME: {p.name} \nPRODUCT PRICE: €{p.price}')
-    print("- - - - - - - - -\n")
+        print("---------------")
+        print(f"PRODUCT NAME: {p.name}\nPRODUCT PRICE: €{p.price:.2f}")
+        print("- - - - - - - - -")
 
+# reading in csv file
 def createAndStockShop():
     with open('stock.csv') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
@@ -47,51 +48,109 @@ def createAndStockShop():
             print(ps)
     return s
 
+def readCustomer(file_path):
+    with open(file_path) as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        first_row = next(csv_reader)
+        c = Customer(first_row[0], float(first_row[1]))
+        for row in csv_reader:
+            name = row[0]
+            quantity = float(row[1])
+            p = Product(name)
+            ps = ProductStock(p, quantity)
+            c.shoppingList.append(ps)
+        return c 
+
+# function to print shop stock
 def printShop(s):
-    print("//////////\n")
-    print("Stock list\n")
-    print("//////////\n")
-    print(f'Shop has a float of €{s.cash}')
+    print("\n//////////")
+    print("Stock list")
+    print("//////////")
+    print(f"Shop has a float of €{s.cash:.2f}")
     for item in s.stock:
+        iq = int(item.quantity)
         printProduct(item.product)
-        print(f'The shop has {item.quantity} in stock')
-    
-def checkProductStock():
-    for custItem in c.shoppingList:
-        subTotal = 0
-        matchExist = 0
-        custItemName = custItem.product.name
-        for shopItem in s.stock:
-            shopItemName = shopItem.product.name         
-            if (custItemName == shopItemName):
-                matchExist += 1
+        print(f"The shop has {iq} in stock")
+        print("---------------")
 
-                if (custItem.quantity <= shopItem.quantity):
-                    print("OK we have enough")
-                    subTotalFull = custItem.quantity * shopItem.product.price
-                    print(f"subtotal cost will be €{subTotalFull:.2f}.")
-                    subTotal = subTotalFull
-                else:
-                    partialOrderQuantity = custItem.quantity - \
-                        (custItem.quantity - shopItem.quantity)
+def checkProductStock(n, order):
+    for item in s.stock:
+        # ProductStock.product = item
+        name = item.product.name
+        if (name, n) == 0:
+            if item.quantity >= order:
+                item.quantity = item.quantity - order
+            else:
+                order = item.quantity
+                item.quantity = 0
+        # print(order)
+        # print(type(order))
+        return order
 
-                    subTotalPartial = partialOrderQuantity * shopItem.product.price
-                    print(f"only {partialOrderQuantity} is available")
-                    subTotal = subTotalPartial
-                
-                totalCost = totalCost + subTotal
-            
-            if (matchExist == 0):
-                print("This product is not available")
+    # for custItem in c.shoppingList:
+    #     matchExist = 0
+    #     subTotal = 0
+    #     custItemName = custItem.product.name
+    #     for shopItem in s.stock:
+    #         shopItemName = shopItem.product.name
 
-        print(f"\nTotal shopping cost will be €{totalCost:.2f}\n")
+    #         if (custItemName == shopItemName):
+    #             matchExist += 1
 
-        return totalCost
+    #             if (custItem.quantity <= shopItem.quantity):
+    #                 shopItem.quantity = shopItem.quantity - custItem.quantity
 
+    #             else:
+    #                 partialOrderQty = custItem.quantity - \
+    #                     (custItem.quantity -
+    #                      shopItem.quantity)
+    #                 subTotalPartial = partialOrderQty * shopItem.product.price
+    #                 subTotal = subTotalPartial
 
-def findProductPrice():
-    productPrice = Product.price
-    return productPrice
+    #             totalCost = totalCost + subTotal
+    #     if (matchExist == 0):
+    #         print("Sorry, we don't have enough in stock!")
+    # return c
+
+        # ProductStock.product = s.stock
+        # name = product.name
+        # # custItem = item
+        # name = item.name
+        # if (name, n) == 0:
+        #     if (item.quantity >= order):
+        #         item.quantity = item.quantity - order
+
+        #     else:
+        #         order = item.quantity
+        #         item.quantity = 0
+
+        #     return order
+        # else:
+        #     return -1
+        # for shopItem in s.stock:
+        #     shopItemName = shopItem.product.name
+        #     if ((custItemName, n) == shopItemName):
+        #         if (shopItem.quantity >= order):
+        #             shopItem.quantity = shopItem.quantity - order
+        #         else:
+        #             print("Sorry, we don't have enough in stock!")
+        #     else:
+        #         print("Sorry we don't stock those")
+
+        #     return order
+
+def findProductPrice(s,c):
+    for item in c.shoppingList:
+        for prod in s.stock:
+            if item.product.name==prod.product.name:
+                item.product.price==prod.product.price
+
+        # Product.product = price.product
+        # x = Product.name
+        # if x == 0:
+        #     return Product.price
+    # productPrice = Product.price
+    # return productPrice
 
 def createCustomer(file_path):
     c = Customer()
@@ -105,69 +164,76 @@ def createCustomer(file_path):
             p = Product(name)
             ps = ProductStock(p, quantity)
             c.shoppingList.append(ps)
-        return c 
+        return c
 
 # Live mode??????
-def liveMode():
-    pass
+# def liveMode():
+    # pass
 
-def printCustomer(c):
+def printCustomer(c,s):
+    print("////////////////////////")
+    print(f"{c.name}'s shopping list")
     print("////////////////////////\n")
-    print(f"{c.name}'s shopping list\n")
-    print("////////////////////////\n")
-    print(f"Budget: €{c.budget}")
-    
+    print(f"Budget: €{c.budget:.2f}")
+    totalBill = 0
     for item in c.shoppingList:
-        printProduct(item.product)
-        print(f"QUANTITY REQUIRED: {item.quantity}\n")
-        if item.price > -1:
-            cost = item.quantity * item.product.price
+        for prod in s.stock:
+            if item.product.name == prod.product.name:
+                shopPrice = prod.product.price
+                shopQuant = int(prod.quantity)
+                
+        cost = item.quantity * shopPrice
+        if item.quantity >= shopQuant:
+            print("\nSorry! Can't fulfill order on this item due to insufficient stock.")
+        else:
+            totalBill += cost
+            c.budget -= cost
+            s.cash += cost
+        # qb = int(item.quantity)
+            printProduct(item.product)
+            print(f"QUANTITY REQUIRED: {item.quantity}\n")
+        # if (item.product.price > -1):
+        #     cost = qb * item.product.price
+        #     if cost > c.budget:
+        #         qb = c.budget / item.product.price
+        #     order = checkProductStock(item.product.name, qb)
+            # printProduct(item.product)
+            print(f"QUANTITY PURCHASED: {item.quantity}")
+            print(f"TOTAL ITEM COST:: €{item.product.price:.2f}")
+            print("- - - - - - - - ")
+            print(f"ADJUSTED BUDGET: €{c.budget:.2f}")
+            print(f"(ADJUSTED SHOP FLOAT: €{s.cash:.2f})")
+            print("---------------")
+            print(f"TOTAL BILL SO FAR: €{totalBill:.2f}")
+            print("---------------")
+    print(f"TOTAL BILL: {totalBill}")
+            # if (item.quantity != qb):
+	        #     print("\nSorry! Can't fulfill order on this item due to insufficient funds/stock.")
+            # item.quantity -= qb
 
-            if cost > c.budget:
-                item.quantity = c.budget / item.price 
-
-                item.quantity = checkProductStock(item.name, item.quantity)
-
-                cost = item.quantity * item.price
-
-                c.budget -= cost
-                s.cash += cost
-                totalBill = 0
-                totalBill += cost
-
-                printProduct(item.product)
-
-                print(f'QUANTITY PURCHASED: {item.quantity}')
-                print(f'TOTAL ITEM COST:: €{item.price}')
-                print("- - - - - - - - \n")
-                print(f'ADJUSTED BUDGET: €{c.budget}')
-                print(f'(ADJUSTED SHOPFLOAT: €{s.cash})')
-                print("---------------\n")
-                print(f"TOTAL BILL: €{totalBill}")
-                print("---------------\n")
-
-                c.shoppingList.quantity -= item.quantity
-
-            else:
-	            print(f"TOTAL ITEM COST: €{cost}\n")
-                print("- - - - - - - - \n")
-
-        else:           
-	    	print(f"Sorry, we do not stock {item.name}\n")
+            # else:
+	        #     print(f"TOTAL ITEM COST: €{cost}")
+            #     print("- - - - - - - -")
+    return c
+        # else:
+        #     print(f"Sorry, we do not stock {item.name}")
 
 def mainMenu():
-    print("\n/////////////////////\n")
-    print("WELCOME TO THE C SHOP\n")
-    print("/////////////////////\n")
+    print("\n/////////////////////")
+    print("WELCOME TO THE C SHOP")
+    print("/////////////////////")
     print("Please select from the following: ")
-    print("1 - Show shop's current stock and float") 
-    print("2 - Shop with Caoimhin's shopping list") 
+    print("1 - Show shop's current stock and float")
+    print("2 - Shop with Caoimhin's shopping list")
     print("3 - Shop with PJs's shopping list")
-    print("4 - Shop with JimBob's shopping list") 
+    print("4 - Shop with JimBob's shopping list")
     print("5 - Shop in Live Mode")
     print("0 - Exit")
 
+
+
 def shopMenu(s):
+    s = createAndStockShop()
 
     mainMenu()
 
@@ -180,25 +246,28 @@ def shopMenu(s):
 
         elif (choice == "2"):
             customer1 = createCustomer("customer1.csv")
+            printCustomer(customer1,s)
             mainMenu()
 
         elif (choice == "3"):
             customer2 = createCustomer("customer2.csv")
+            printCustomer(customer2,s)
             mainMenu()
 
         elif (choice == "4"):
             customer3 = createCustomer("customer3.csv")
+            printCustomer(customer3,s)
             mainMenu()
 
         elif (choice == "5"):
             print("\n////////////////////////////////")
-			print("\nYou are now entering our LIVE SHOPPING MODE!\n")
-            print("////////////////////////////////\n")
+            print("You are now entering our LIVE SHOPPING MODE!")
+            print("////////////////////////////////")
             # liveMode()
             mainMenu()
 
-        elif (choice == "0"):           
-			print(f"Bye {customer.name}! Thank's for your custom!\nCome again soon!")
+        elif (choice == "0"):
+            print(f"Bye {c.name}! Thank's for your custom! Come again soon!")
             break
 
         else:
