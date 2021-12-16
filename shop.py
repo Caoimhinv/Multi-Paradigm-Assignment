@@ -31,9 +31,9 @@ s = Shop()
 
 # function to print product
 def printProduct(p):
-        print("---------------")
-        print(f"PRODUCT NAME: {p.name}\nPRODUCT PRICE: €{p.price:.2f}")
-        print("- - - - - - - - -")
+    print("---------------")
+    print(f"PRODUCT NAME: {p.name}\nPRODUCT PRICE: €{p.price:.2f}")
+    print("- - - - - - - - -")
 
 # reading in csv file
 def createAndStockShop():
@@ -190,7 +190,9 @@ def printCustomer(c,s):
             c.budget -= cost
             s.cash += cost
         # qb = int(item.quantity)
-            printProduct(item.product)
+            # printProduct(item.product)
+            item.quantity = int(item.quantity)
+            printProduct(prod.product)
             print(f"QUANTITY REQUIRED: {item.quantity}\n")
         # if (item.product.price > -1):
         #     cost = qb * item.product.price
@@ -199,14 +201,14 @@ def printCustomer(c,s):
         #     order = checkProductStock(item.product.name, qb)
             # printProduct(item.product)
             print(f"QUANTITY PURCHASED: {item.quantity}")
-            print(f"TOTAL ITEM COST:: €{item.product.price:.2f}")
+            print(f"TOTAL ITEM COST:: €{cost:.2f}")
             print("- - - - - - - - ")
             print(f"ADJUSTED BUDGET: €{c.budget:.2f}")
             print(f"(ADJUSTED SHOP FLOAT: €{s.cash:.2f})")
             print("---------------")
             print(f"TOTAL BILL SO FAR: €{totalBill:.2f}")
             print("---------------")
-    print(f"TOTAL BILL: {totalBill}")
+    print(f"TOTAL BILL: €{totalBill}\n** Thank you for your custom **\n")
             # if (item.quantity != qb):
 	        #     print("\nSorry! Can't fulfill order on this item due to insufficient funds/stock.")
             # item.quantity -= qb
