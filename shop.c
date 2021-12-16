@@ -325,16 +325,6 @@ void mainMenu(struct Shop s) {
 				liveMode();
 				break;
 			}
-			// case 7:{
-			// 	s = createAndStockShop();
-			// 	printf("\n***Shop stock and float now reset***\n");
-			// 	break;
-			// }
-			// case 8:{
-			// 	c = createCustomer();
-			// 	printf("\n***Customer budget now reset***!\n");
-			// 	break;
-			// }
 			case 0:{
 				printf("\nBye %s! Thank's for your custom!\nCome again soon!\n", c.name);
 				break;
@@ -346,7 +336,6 @@ void mainMenu(struct Shop s) {
 		}
 	}
 	    while (menuSelect != 0);
-    // return 0;
 }
 // main method
 int main()
