@@ -185,7 +185,7 @@ void liveMode() {
                 }
                 default: {
                     if (select > s.index+1) {
-                        printf("Please select from the list above");
+                        printf("Please choose a number from the list above");
                         break;
                     }
                     printf ("How many %ss would you like to purchase? ", s.stock[select-1].product.name);
