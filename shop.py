@@ -81,10 +81,10 @@ def checkProductStock(n,q):
                 return q
             elif q > item.quantity:
                 q = int(item.quantity)
-                print(f"We don't have that many in stock. We only have {q}")
+                print(f"We don't have that much {n} in stock. We only have {q}")
                 return q
-        else:
-            print(f"Sorry, we don't stock {n}!")
+        # else:
+        #     print(f"Sorry, we don't stock {n}!")
 
 def createCustomer(file_path):
     with open(file_path) as csv_file:
@@ -162,42 +162,47 @@ def liveMode():
     mainMenu()
 
 def printCustomer(c,s):
-    print("////////////////////////")
+    print("\n////////////////////////")
     print(f"{c.name}'s shopping list")
     print("////////////////////////\n")
-    print(f"Budget: €{c.budget:.2f}")
+    print(f"BUDGET: €{c.budget:.2f}")
     totalBill = 0
     for item in c.shoppingList:
         for prod in s.stock:
             if item.product.name == prod.product.name:
+                choiceName = item.product.name
                 shopPrice = prod.product.price
                 shopQuant = int(prod.quantity)
                 item.quantity = int(item.quantity)
-        if item.quantity >= shopQuant:
-            print("\nSorry! Can't fulfill order on this item due to insufficient stock.")
-            quit()
-        else:
-            cost = item.quantity * shopPrice
+                QB = checkProductStock(choiceName, item.quantity)
+                cost = QB * shopPrice
+        if c.budget < cost:
+            print("\n** Sorry! You don't have enough money left for this item! **")
+            continue
+        else:        
             totalBill += cost
             c.budget -= cost
             s.cash += cost
             print("---------------")
             print(f"PRODUCT NAME: {item.product.name}")
             print(f"PRODUCT PRICE: €{shopPrice:.2f}")
+            print("- - - - - - - - ")
             print(f"QUANTITY REQUIRED: {item.quantity}")
             # else:
             print("- - - - - - - - ")
-            print(f"QUANTITY PURCHASED: {item.quantity}")
+            print(f"QUANTITY PURCHASED: {QB}")
             print(f"TOTAL ITEM COST:: €{cost:.2f}")
             print("- - - - - - - - ")
             print(f"ADJUSTED BUDGET: €{c.budget:.2f}")
             print(f"(ADJUSTED SHOP FLOAT: €{s.cash:.2f})")
             print("---------------")
             print(f"TOTAL BILL SO FAR: €{totalBill:.2f}")
-            print("---------------")
+            print("\n---------------")
             shopQuant -= item.quantity
-        
-    print(f"TOTAL BILL: €{totalBill:.2f}\n** Thank you for your custom **\n")
+    
+    print(f"\nTOTAL BILL: €{totalBill:.2f}")
+    print(f"BUDGET REMAINING: €{c.budget:.2f}")
+    print("\n** Thank you for your custom **\n")
 
     return c
 

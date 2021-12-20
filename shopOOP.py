@@ -44,63 +44,70 @@ class Customer:
                 ps = ProductStock(p, quantity)
                 self.shoppingList.append(ps) 
                 
-    def printCustomer(self, shop_stock):
-        for prod in shop_stock:
-            for item in self.shoppingList:
-                if item.name() == prod.name():
-                    item.product.price = prod.itemPrice()
-                    shopPrice = item.product.price
-                    shopQuant = int(prod.quantity)
-                    item.quantity = int(item.quantity)
-                    # print (shopPrice)
-            if shopQuant < item.quantity:
-                print("\nSorry! Can't fulfill order on this item due to insufficient stock.")
-            else:
-                totalBill = 0
-                cost = item.quantity * shopPrice
-                totalBill += cost
-                self.budget -= cost
-                shop.cash += cost
-                print("---------------")
-                print(f"PRODUCT NAME: {item.product.name}")
-                print(f"PRODUCT PRICE: €{shopPrice:.2f}")
-                print(f"QUANTITY REQUIRED: {item.quantity}")
-                print("- - - - - - - - ")
-                print(f"QUANTITY PURCHASED: {item.quantity}")
-                print(f"TOTAL ITEM COST:: €{cost:.2f}")
-                print("- - - - - - - - ")
-                print(f"ADJUSTED BUDGET: €{self.budget:.2f}")
-                print(f"(ADJUSTED SHOP FLOAT: €{shop.cash:.2f})")
-                print("---------------")
-                print(f"TOTAL BILL SO FAR: €{totalBill:.2f}")
-                print("---------------")
-                shopQuant -= item.quantity
-        # print(f"TOTAL BILL: €{totalBill:.2f}\n** Thank you for your custom **\n")
-        return self
-
-    def order_cost(self):
-        cost = 0
-        for i in self.shoppingList:
-            cost += i.cost()
-        return cost
+    def printCustomer(self):
+        stock = shop.stock
+        for i in stock:
+            shop_item_name = i.product.name
+            if shop_item_name == self.shoppingList: 
+                return i
         
     def __repr__(self):
         print('')
         format_float = "{:.2f}".format(self.budget)
         str = f"\n////////////////////////\n{self.name}'s shopping list\n////////////////////////\n"
         str += f"BUDGET: €{format_float}\n"
+        totalBill = 0
         for item in self.shoppingList:
-            cost = item.cost()
-            str += f"\n{item}"
-            if (cost == 0):
-                str += f"Sorry, we don't stock {item.product.name}\n"
-            else:
-                str += f"TOTAL COST: €{round(self.order_cost(),2)}\n"
-                
-        str += f"\n{self.name}'s budget is now €{round(self.budget - self.order_cost(),2)}\n"
-        str += f"\nTOTAL BILL: €{round(self.order_cost(),2)}\n** Thank you for your custom **\n"
+            for prod in shop.stock:
+                if item.product.name == prod.name():
+                    choiceName = item.product.name
+                    item.product.price = prod.product.price
+                    shopPrice = prod.product.price
+                    shopQuant = int(prod.quantity)
+                    item.quantity = int(item.quantity)
+                    QB = shop.checkProductStock(choiceName, item.quantity)
+                    if QB < item.quantity:
+                        str += f"\n** We don't have that much {choiceName} in stock. We only have {QB} **"
+                    cost1 = QB * shopPrice
+                    if self.budget < cost1:
+                        # QB = self.whatCanIAfford(QB)
+                        # str += f"{QB}"
+                        # QB = budget / choicePrice
+                        # QB1 = math.floor(QB)
+                        # totalCost = QB1 * item.product.price
+                        str += ("\n** Sorry! You don't have enough money left for this item! **\n")                       
+                        continue
+                    # if choiceName != prod.name(): 
+                    #     str += f"\nWe don't stock that item!\n"
+                    #     continue
+                    else:
+                        totalBill += cost1
+                        self.budget -= cost1
+                        shop.cash += cost1
+                        str += f"\n{item}"
+                        str += f"- - - - - - - - \nQUANTITY PURCHASED: {QB}"
+                        str += f"\nTOTAL ITEM COST: €{cost1:.2f}\n"
+                        str += f"- - - - - - - - - - - - - -\n"
+                        str += f"ADJUSTED BUDGET: €{self.budget:.2f}"
+                        str += f"\n(ADJUSTED SHOP FLOAT: €{shop.cash:.2f})"
+                        str += f"\n- - - - - - - - - - - - - -\n"
+                        str += f"TOTAL BILL SO FAR: €{totalBill:.2f}"
+                        str += "\n---------------"
+                        shopQuant -= item.quantity
+              
+        str += f"\n\nTOTAL BILL: €{totalBill:.2f}"
+        str += f"\nBUDGET REMAINING: €{self.budget:.2f}"
+        str += f"\n** Thank you for your custom **\n"
+            
         return str 
- 
+
+    # def whatCanIAfford(self, q):
+        # for item in shop.stock:
+            # q = self.budget / item.product.price
+            # q = math.floor(q)
+        # return q
+        # totalCost = QB1 * choicePrice
+
 class Shop:
     
     def __init__(self, path): 
@@ -142,10 +149,7 @@ class Shop:
                     return q
                 elif q > item.quantity:
                     q = int(item.quantity)
-                    print(f"We don't have that many in stock. We only have {q}")
-                    return q
-            else:
-                print(f"Sorry, we don't stock {n}!")
+                return q
 
     def liveMode(self):
         budget = float(input("What is your budget? \n"))
@@ -231,17 +235,17 @@ def main():
             mainMenu()
         elif (choice == "2"):
             customer1 = Customer("customer1.csv")
-            customer1.printCustomer(shop.stock)
+            customer1.printCustomer()
             print(customer1)
             mainMenu()
         elif (choice == "3"):
             customer2 = Customer("customer2.csv")
-            customer2.printCustomer(shop.stock)
+            customer2.printCustomer()
             print(customer2)
             mainMenu()
         elif (choice == "4"):
             customer3 = Customer("customer3.csv")
-            customer3.printCustomer(shop.stock)
+            customer3.printCustomer()
             print(customer3)
             mainMenu()
         elif (choice == "5"):
