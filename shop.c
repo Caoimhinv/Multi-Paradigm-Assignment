@@ -228,7 +228,7 @@ void printCustomer(bool upd) {
 	printf("%s's shopping list\n", c.name);
     printf("////////////////////////\n");
 	printf("Budget: €%.2f\n", c.budget);
-	int qb; 
+	int qb, QB; 
     double cost, totalBill;
 	for(int i = 0; i < c.index; i++){
 		qb = c.shoppingList[i].quantity;
@@ -237,15 +237,19 @@ void printCustomer(bool upd) {
 		if (c.shoppingList[i].product.price > -1){
 			cost = qb * c.shoppingList[i].product.price; 
 			if (upd){
-				if(cost > c.budget){
-					qb = c.budget / c.shoppingList[i].product.price;
-				}
-				qb = checkProductStock(c.shoppingList[i].product.name, qb);				
-				cost = qb * c.shoppingList[i].product.price;				
+				QB = checkProductStock(c.shoppingList[i].product.name, qb);
+                cost = QB * c.shoppingList[i].product.price;
+                if (QB < qb){
+                    printf("\n** We don't have that much %s in stock. We only have %d **\n", c.shoppingList[i].product.name, QB);
+                    };
+                if(cost > c.budget){
+				    printf("\n** Sorry! You don't have enough money left for this item! **\n");
+				    continue;
+                    };								
 				c.budget -= cost;				
 				s.cash += cost;
                 totalBill += cost;
-				printf("QUANTITY PURCHASED: %d\n", qb);
+				printf("QUANTITY PURCHASED: %d\n", QB);
 				printf("TOTAL ITEM COST: €%.2f\n", cost);
                 printf("- - - - - - - - \n");
 				printf("ADJUSTED BUDGET: €%.2f\n", c.budget);
@@ -253,9 +257,9 @@ void printCustomer(bool upd) {
                 printf("---------------\n");
                 printf("TOTAL BILL: €%.2f\n", totalBill);
                 printf("---------------\n");
-				if (c.shoppingList[i].quantity != qb){
-					printf("\nSorry! Can't fulfill order on this item due to insufficient funds/stock.\n");
-				}
+				// if (c.shoppingList[i].quantity != qb){
+				// 	printf("\nSorry! Can't fulfill order on this item due to insufficient funds/stock.\n");
+				// }
 				c.shoppingList[i].quantity -= qb;				
 			}	
 			else {
@@ -278,16 +282,10 @@ void mainMenu(struct Shop s) {
         printf("/////////////////////\n");
 		printf("\nPlease select from the following:\n\n");
 		printf("1 - Show shop's current stock and float\n"); 
-		printf("2 - Show Caoimhin's shopping list\n"); 
-        // other shopping lists?
-		printf("3 - Shop with Caoimhin's shopping list\n"); 
-        printf("4 - Shop with PJs's shopping list\n"); 
-        printf("5 - Shop with JimBob's shopping list\n"); 
-        // options for other shopping lists?
-		printf("6 - Shop in Live Mode\n"); 
-        // get rid of resets?
-		// printf("7 - Reset shop stock and float\n"); 
-		// printf("8 - Reset customer budget\n"); 
+		printf("2 - Shop with Caoimhin's shopping list\n"); 
+        printf("3 - Shop with PJs's shopping list\n"); 
+        printf("4 - Shop with JimBob's shopping list\n"); 
+		printf("5 - Shop in Live Mode\n"); 
 		printf("0 - Exit\n");
 		printf("\nPlease make a selection: \n");
 		scanf("%d", &menuSelect);
@@ -299,26 +297,21 @@ void mainMenu(struct Shop s) {
 				break;
 			}
 			case 2:{
-                struct Customer customer_A = createCustomer("customer1.csv");
-				printCustomer(false);
-				break;
-			}
-			case 3:{
                 struct Customer customer1 = createCustomer("customer1.csv");
 				printCustomer(true);
 				break;
 			}
-            case 4:{
+            case 3:{
                 struct Customer customer2 = createCustomer("customer2.csv");
 				printCustomer(true);
 				break;
 			}
-            case 5:{
+            case 4:{
                 struct Customer customer3 = createCustomer("customer3.csv");
 				printCustomer(true);
 				break;
 			}
-			case 6:{
+			case 5:{
                 printf("\n////////////////////////////////");
 				printf("\nYou are now entering our LIVE SHOPPING MODE!\n");
                 printf("////////////////////////////////\n");

@@ -126,8 +126,6 @@ def liveMode():
             quant = int(input(f"How many {choiceName} would you like to purchase? "))
             QB = checkProductStock(choiceName, quant)
             totalCost = QB * choicePrice
-            # receipt = []
-            # receipt.append(choiceName)
             if budget < totalCost:
                 QB = budget / choicePrice
                 QB1 = math.floor(QB)
@@ -148,9 +146,6 @@ def liveMode():
             print(f"TOTAL BILL SO FAR: €{totalBill:.2f}")   
         elif choice == 98:
             print("\n--------------------\n")
-            # for i in receipt:
-            #     print(i)
-            # print(*receipt, sep = "\n")
             print(f"Your total bill is €{totalBill:.2f}\n")
             print("Thank you for your custom. Please come again soon!\n")
             print("--------------------\n")
@@ -172,17 +167,18 @@ def printCustomer(c,s):
             if item.product.name == prod.product.name:
                 choiceName = item.product.name
                 shopPrice = prod.product.price
-                shopQuant = int(prod.quantity)
+                # shopQuant = int(prod.quantity)
                 item.quantity = int(item.quantity)
                 QB = checkProductStock(choiceName, item.quantity)
                 cost = QB * shopPrice
+                prod.quantity -= QB
         if c.budget < cost:
             print("\n** Sorry! You don't have enough money left for this item! **")
             continue
         else:        
             totalBill += cost
             c.budget -= cost
-            s.cash += cost
+            s.cash += cost        
             print("---------------")
             print(f"PRODUCT NAME: {item.product.name}")
             print(f"PRODUCT PRICE: €{shopPrice:.2f}")
@@ -198,8 +194,7 @@ def printCustomer(c,s):
             print("---------------")
             print(f"TOTAL BILL SO FAR: €{totalBill:.2f}")
             print("\n---------------")
-            shopQuant -= item.quantity
-    
+            
     print(f"\nTOTAL BILL: €{totalBill:.2f}")
     print(f"BUDGET REMAINING: €{c.budget:.2f}")
     print("\n** Thank you for your custom **\n")
@@ -220,8 +215,6 @@ def mainMenu():
     # for i in c.shoppingList:
         # print(i)
         # print(f"{s.stock.index(prod) + 1} - {prod.product.name} @ €{prod.product.price:.2f} each")
-
-
 
 def shopMenu(s):
     # s = createAndStockShop()

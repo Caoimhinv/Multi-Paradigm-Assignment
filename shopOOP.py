@@ -63,23 +63,20 @@ class Customer:
                     choiceName = item.product.name
                     item.product.price = prod.product.price
                     shopPrice = prod.product.price
-                    shopQuant = int(prod.quantity)
                     item.quantity = int(item.quantity)
                     QB = shop.checkProductStock(choiceName, item.quantity)
-                    if QB < item.quantity:
-                        str += f"\n** We don't have that much {choiceName} in stock. We only have {QB} **"
+                    # FECK = shop.check_shop(choiceName)
                     cost1 = QB * shopPrice
+                    if QB < item.quantity:
+                        str += f"\n** We don't have that much {choiceName} in stock. We only have {QB} **"                   
                     if self.budget < cost1:
                         # QB = self.whatCanIAfford(QB)
                         # str += f"{QB}"
                         # QB = budget / choicePrice
                         # QB1 = math.floor(QB)
                         # totalCost = QB1 * item.product.price
-                        str += ("\n** Sorry! You don't have enough money left for this item! **\n")                       
-                        continue
-                    # if choiceName != prod.name(): 
-                    #     str += f"\nWe don't stock that item!\n"
-                    #     continue
+                        str += f"\n** Sorry! You don't have enough money left for {choiceName}! **\n"                      
+                        continue                 
                     else:
                         totalBill += cost1
                         self.budget -= cost1
@@ -93,8 +90,13 @@ class Customer:
                         str += f"\n- - - - - - - - - - - - - -\n"
                         str += f"TOTAL BILL SO FAR: €{totalBill:.2f}"
                         str += "\n---------------"
-                        shopQuant -= item.quantity
-              
+                        # if (cost1 == 0):
+                            # str += f"\nApologies\n"
+                            # continue
+                    prod.quantity -= QB  
+                # else:
+                    # str += f"\nWe don't stock {item.product.name}!\n"
+                    # break
         str += f"\n\nTOTAL BILL: €{totalBill:.2f}"
         str += f"\nBUDGET REMAINING: €{self.budget:.2f}"
         str += f"\n** Thank you for your custom **\n"
@@ -135,14 +137,22 @@ class Shop:
             print(f"The shop has {iq} in stock")
             print("---------------")
                 
-    def check_shop(self, customerShoppingList):
-        stock = self.stock
-        for i in stock:
-            shop_item_name = i.product.name
-            if shop_item_name == customerShoppingList: 
-                return i
+    def check_shop(self, n):
+        losers = []
+        for item in shop.stock:
+            for prod in n:
+                if prod != item.product.name:
+                    losers.append(prod)
+
     
-    def checkProductStock(self, n,q):
+            # if n != item.product.name:
+                # losers.append(n)
+            # shop_item_name = i.product.name
+            # if shop_item_name != customerShoppingList: 
+                # losers.append(i)
+            return losers
+    
+    def checkProductStock(self, n, q):
         for item in shop.stock:
             if n == item.product.name:
                 if q <= item.quantity:
@@ -150,6 +160,8 @@ class Shop:
                 elif q > item.quantity:
                     q = int(item.quantity)
                 return q
+            # else:
+            #     print("is this working?")
 
     def liveMode(self):
         budget = float(input("What is your budget? \n"))
@@ -158,15 +170,15 @@ class Shop:
         print("Welcome to the C shop LIVE SHOPPING MODE!")
         print("//////////////////////\n")
         while True:
-            print(f"Your current budget is €{budget:.2f}.\n\nPlease select what you would like to buy from the list below:\n")
-            for prod in shop.stock:
+            print(f"\nYour current budget is €{budget:.2f}.\n\nPlease select what you would like to buy from the list below:\n")
+            for prod in self.stock:
                 print(f"{shop.stock.index(prod) + 1} - {prod.product.name} @ €{prod.product.price:.2f} each")
-            print("**98** - finish shopping and print total bill")
-            print("**99** - Exit Live Mode\n")
-            choice = int(input("Please make your selection: "))
+            print("** 98 ** - finish shopping and print total bill")
+            print("** 99 ** - Exit Live Mode\n")
+            choice = int(input("Please make a selection: "))
             if choice == 99:
                 print("\n--------------------\n")
-                print("Come again soon and have a nice day!\n")
+                print("** Come again soon and have a nice day! **\n")
                 print("--------------------\n")
                 break
             elif choice <= len(shop.stock) and budget > 0:
@@ -177,40 +189,45 @@ class Shop:
                 quant = int(input(f"How many {choiceName} would you like to purchase? "))
                 QB = self.checkProductStock(choiceName, quant)
                 totalCost = QB * choicePrice
+                if QB < quant:
+                    print(f"\n** We don't have that much {choiceName} in stock. We only can only give you {QB} **")  
                 # receipt = []
                 # receipt.append(choiceName)
                 if budget < totalCost:
-                    QB = budget / choicePrice
-                    QB1 = math.floor(QB)
-                    totalCost = QB1 * choicePrice
+                    # QB = budget / choicePrice
+                    # QB1 = math.floor(QB)
+                    # totalCost = QB1 * choicePrice
                     print("You don't have the budget to complete that transaction.")
                     continue
                 budget -= totalCost
                 totalBill += totalCost
                 shop.cash += totalBill
                 Product(choiceDetails)
-
                 print(f"QUANTITY REQUIRED: {quant}")
                 print(f"QUANTITY PURCHASED: {QB}")
                 print(f"TOTAL ITEM COST: €{totalCost:.2f}")
                 print(f"ADJUSTED BUDGET: €{budget:.2f}")
                 print(f"(ADJUSTED SHOP FLOAT: €{shop.cash:.2f}")
                 print(f"- - - - - - - - - - - - - -\n")
-                print(f"TOTAL BILL SO FAR: €{totalBill:.2f}")   
+                print(f"TOTAL BILL SO FAR: €{totalBill:.2f}") 
+                # prod.quantity -= QB  
             elif choice == 98:
                 print("\n--------------------\n")
                 # for i in receipt:
                 #     print(i)
                 # print(*receipt, sep = "\n")
                 print(f"Your total bill is €{totalBill:.2f}\n")
-                print("Thank you for your custom. Please come again soon!\n")
+                print("** Thank you for your custom. Please come again soon! **\n")
                 print("--------------------\n")
                 break
             elif choice < 1:
                 print("Invalid number please try again: ")
             else:
                 choice = input("Invalid number please try again: ")
-        mainMenu()
+        prod.quantity -= QB
+        shop.cash += totalBill
+        # continue
+        # mainMenu()
 
 def mainMenu(): 
     print("\n////////////////////////")
