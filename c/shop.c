@@ -247,9 +247,6 @@ void printCustomer(bool upd) {
 			if (upd){
 				QB = checkProductStock(c.shoppingList[i].product.name, qb);
                 cost = QB * c.shoppingList[i].product.price;
-                // if (QB < qb){
-                //     printf("\n** We don't have that much %s in stock. We only have %d **\n", c.shoppingList[i].product.name, QB);
-                //     };
                 if(cost > c.budget){
 				    printf("** Sorry! You don't have enough money left for %s! **\n", c.shoppingList[i].product.name);
                     printf("---------------\n");
@@ -268,20 +265,13 @@ void printCustomer(bool upd) {
 				printf("(ADJUSTED SHOP FLOAT: €%.2f)\n", s.cash);
                 printf("---------------\n");
                 printf("TOTAL BILL SO FAR: €%.2f\n", totalBill);
-                printf("---------------\n");
-				// if (c.shoppingList[i].quantity != qb){
-				// 	printf("\nSorry! Can't fulfill order on this item due to insufficient funds/stock.\n");
-				// }
-				// c.shoppingList[i].quantity -= qb;				
+                printf("---------------\n");			
 			    }	
             }
             }
             printf("\nTOTAL BILL: €%.2f\n", totalBill);
             printf("BUDGET REMAINING: €%.2f\n", c.budget);
             printf("\n** Thank you for your custom **\n\n");
-        
-        // else {
-			// printf("Sorry, we do not stock %s!\n", c.shoppingList[i].product.name);	// }
         }
 
 // main program with menu, etc.
@@ -300,7 +290,6 @@ void mainMenu(struct Shop s) {
 		printf("0 - Exit\n");
 		printf("\nPlease make a selection: ");
 		scanf("%d", &menuSelect);
-        // https://www.programiz.com/c-programming/c-switch-case-statement
 		switch (menuSelect){
 
 			case 1:{

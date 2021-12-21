@@ -49,19 +49,6 @@ def createAndStockShop():
             # print(ps)
     return s
 
-def readCustomer(file_path):
-    with open(file_path) as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=',')
-        first_row = next(csv_reader)
-        c = Customer(first_row[0], float(first_row[1]))
-        for row in csv_reader:
-            name = row[0]
-            quantity = float(row[1])
-            p = Product(name)
-            ps = ProductStock(p, quantity)
-            c.shoppingList.append(ps)
-        return c 
-
 # function to print shop stock
 def printShop(s):
     print("\n//////////")
@@ -86,8 +73,6 @@ def checkProductStock(n,q):
                 print(f"** We don't have that many {n} in stock. We can only give you {q} **")
                 item.quantity = 0
                 return q
-        # else:
-        #     print(f"Sorry, we don't stock {n}!")
 
 def createCustomer(file_path):
     with open(file_path) as csv_file:
@@ -217,13 +202,8 @@ def mainMenu():
     print("4 - Shop with JimBob's shopping list")
     print("5 - Shop in Live Mode")
     print("0 - Exit\n")
-    # for i in c.shoppingList:
-        # print(i)
-        # print(f"{s.stock.index(prod) + 1} - {prod.product.name} @ €{prod.product.price:.2f} each")
 
 def shopMenu(s):
-    # s = createAndStockShop()
-    # c = Customer()
     mainMenu()
 
     while True:
@@ -253,7 +233,6 @@ def shopMenu(s):
             print("You are now entering our LIVE SHOPPING MODE!")
             print("////////////////////////////////")
             liveMode()
-            # mainMenu()
 
         elif (choice == "0"):
             print("\n** Bye! Thanks for your custom! **\n** Come again soon! **\n")
@@ -265,7 +244,6 @@ def shopMenu(s):
 
 def main():
     newShop = createAndStockShop()
-    # print(newShop)
     shopMenu(newShop)
 
 if __name__ == "__main__":

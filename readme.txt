@@ -1,22 +1,16 @@
-# Multi-Paradigm Programming
+Multi-Paradigm Programming
 
-## Autumn/Winter Assignment
+GMIT Autumn/Winter Assignment
+------------------------
 
----
+////////
+The Shop
+////////
 
-### The Shop
-
-![shop_image](./Images/shop1.png)
-
----
-<br>
-
-#### Introduction
-
-The brief was to create a shop simulation demonstrating an understanding of both **Procedural** and **Object-Orientated** programming. The initial development of the programs was carried out in lectures with Dr. Dominic Carr after which we were requested to add additional functionality and bring the programs to completion. The Procedural approach was to be completed in both the `C` and `Python` programming languages while we had a choice for the object-orientated version between `Java` and `Python` again.
+Introduction
+The brief was to create a shop simulation demonstrating an understanding of both **Procedural** and **Object-Orientated** programming. The initial development of the programs was carried out in lectures with Dr. Dominic Carr after which we were requested to add additional functionality and bring the programs to completion. The Procedural approach was to be completed in both the `C` and `Python` programming languages while we had a choice for the object-orientated version between `Java` and `Python`.
 
 ___
-<br>
 
 #### Contents of repositry
 

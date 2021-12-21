@@ -65,7 +65,6 @@ class Customer:
                     shopPrice = prod.product.price
                     item.quantity = int(item.quantity)
                     QB = shop.checkProductStock(choiceName, item.quantity)
-                    # FECK = shop.check_shop(choiceName)
                     cost1 = QB * shopPrice
                     if QB < item.quantity:
                         str += f"\n---------------"
@@ -105,13 +104,6 @@ class Customer:
             
         return str 
 
-    # def whatCanIAfford(self, q):
-        # for item in shop.stock:
-            # q = self.budget / item.product.price
-            # q = math.floor(q)
-        # return q
-        # totalCost = QB1 * choicePrice
-
 class Shop:
     
     def __init__(self, path): 
@@ -124,9 +116,6 @@ class Shop:
                 p = Product(row[0], float(row[1]))
                 ps = ProductStock(p, float(row[2]))
                 self.stock.append(ps)
-
-    # def shop_balance(self):
-    #     print(f'Initial cash value for the shop is {shop.cash}')
     
     def printShop(self):
         print("\n//////////")
@@ -138,21 +127,6 @@ class Shop:
             print(item.product)
             print(f"The shop has {iq} in stock")
             print("---------------")
-                
-    def check_shop(self, n):
-        losers = []
-        for item in shop.stock:
-            for prod in n:
-                if prod != item.product.name:
-                    losers.append(prod)
-
-    
-            # if n != item.product.name:
-                # losers.append(n)
-            # shop_item_name = i.product.name
-            # if shop_item_name != customerShoppingList: 
-                # losers.append(i)
-            return losers
     
     def checkProductStock(self, n, q):
         for item in shop.stock:
@@ -166,8 +140,6 @@ class Shop:
                     print(f"** We don't have that many {n} in stock. We can only give you {q} **")
                     item.quantity = 0
                 return q
-            # else:
-            #     print("is this working?")
 
     def liveMode(self):
         budget = float(input("What is your budget? \n"))
@@ -198,8 +170,6 @@ class Shop:
                 Product(choiceDetails)
                 QB = self.checkProductStock(choiceName, quant)
                 totalCost = QB * choicePrice
-                # if QB < quant:
-                #     print(f"\n** We don't have that many {choiceName} in stock. We only can only give you {QB} **")  
                 if budget < totalCost:
                     print(f"\n** You don't have enough money for {choiceName}! **\n")
                     continue
