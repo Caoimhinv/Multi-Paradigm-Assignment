@@ -38,7 +38,7 @@ def printProduct(p):
 
 # reading in csv file
 def createAndStockShop():
-    with open('stock.csv') as csv_file:
+    with open('../stock.csv') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         first_row = next(csv_reader)
         s.cash = float(first_row[0])
@@ -78,10 +78,13 @@ def checkProductStock(n,q):
     for item in s.stock:
         if n == item.product.name:
             if q <= item.quantity:
+                item.quantity = item.quantity - q
                 return q
             elif q > item.quantity:
                 q = int(item.quantity)
-                print(f"We don't have that much {n} in stock. We only have {q}")
+                print("---------------")
+                print(f"** We don't have that many {n} in stock. We can only give you {q} **")
+                item.quantity = 0
                 return q
         # else:
         #     print(f"Sorry, we don't stock {n}!")
@@ -103,21 +106,23 @@ def createCustomer(file_path):
 def liveMode():
     budget = float(input("What is your budget? \n"))
     totalBill = 0
-    print("\n//////////////////////")
+    print("\n/////////////////////////////////////////")
     print("Welcome to the C shop LIVE SHOPPING MODE!")
-    print("//////////////////////\n")
+    print("/////////////////////////////////////////\n")
     while True:
         print(f"Your current budget is €{budget:.2f}.\n\nPlease select what you would like to buy from the list below:\n")
         for prod in s.stock:
             print(f"{s.stock.index(prod) + 1} - {prod.product.name} @ €{prod.product.price:.2f} each")
-        print("**98** - finish shopping and print total bill")
-        print("**99** - Exit Live Mode\n")
+        print("*98* - Finish shopping and print total bill")
+        print("*99* - Exit Live Mode\n")
         choice = int(input("Please make your selection: "))
         if choice == 99:
             print("\n--------------------\n")
             print("Come again soon and have a nice day!\n")
             print("--------------------\n")
             break
+        elif choice <= 0:
+            print("\n** Invalid entry - please try again! **\n")
         elif choice <= len(s.stock) and budget > 0:
             choice = choice - 1
             choiceName = s.stock[choice].product.name
@@ -130,7 +135,7 @@ def liveMode():
                 QB = budget / choicePrice
                 QB1 = math.floor(QB)
                 totalCost = QB1 * choicePrice
-                print("You don't have the budget to complete that transaction.")
+                print(f"\n** You don't have enough money for {choiceName}! **\n")
                 continue
             budget -= totalCost
             totalBill += totalCost
@@ -141,7 +146,7 @@ def liveMode():
             print(f"QUANTITY PURCHASED: {QB}")
             print(f"TOTAL ITEM COST: €{totalCost:.2f}")
             print(f"ADJUSTED BUDGET: €{budget:.2f}")
-            print(f"(ADJUSTED SHOP FLOAT: €{s.cash:.2f}")
+            print(f"(ADJUSTED SHOP FLOAT: €{s.cash:.2f})")
             print(f"- - - - - - - - - - - - - -\n")
             print(f"TOTAL BILL SO FAR: €{totalBill:.2f}")   
         elif choice == 98:
@@ -150,10 +155,9 @@ def liveMode():
             print("Thank you for your custom. Please come again soon!\n")
             print("--------------------\n")
             break
-        elif choice < 1:
-            print("Invalid number please try again: ")
         else:
-            choice = input("Invalid number please try again: ")
+            print("\n** Invalid entry - please try again! **\n")
+    s.cash += totalBill
     mainMenu()
 
 def printCustomer(c,s):
@@ -173,7 +177,8 @@ def printCustomer(c,s):
                 cost = QB * shopPrice
                 prod.quantity -= QB
         if c.budget < cost:
-            print("\n** Sorry! You don't have enough money left for this item! **")
+            print(f"** Sorry! You don't have enough money left for {choiceName}! **")
+            print("---------------")
             continue
         else:        
             totalBill += cost
@@ -193,7 +198,7 @@ def printCustomer(c,s):
             print(f"(ADJUSTED SHOP FLOAT: €{s.cash:.2f})")
             print("---------------")
             print(f"TOTAL BILL SO FAR: €{totalBill:.2f}")
-            print("\n---------------")
+            print("---------------")
             
     print(f"\nTOTAL BILL: €{totalBill:.2f}")
     print(f"BUDGET REMAINING: €{c.budget:.2f}")
@@ -211,7 +216,7 @@ def mainMenu():
     print("3 - Shop with PJs's shopping list")
     print("4 - Shop with JimBob's shopping list")
     print("5 - Shop in Live Mode")
-    print("0 - Exit")
+    print("0 - Exit\n")
     # for i in c.shoppingList:
         # print(i)
         # print(f"{s.stock.index(prod) + 1} - {prod.product.name} @ €{prod.product.price:.2f} each")
@@ -229,17 +234,17 @@ def shopMenu(s):
             mainMenu()
 
         elif (choice == "2"):
-            customer1 = createCustomer("customer1.csv")
+            customer1 = createCustomer("../customer1.csv")
             printCustomer(customer1,s)
             mainMenu()
 
         elif (choice == "3"):
-            customer2 = createCustomer("customer2.csv")
+            customer2 = createCustomer("../customer2.csv")
             printCustomer(customer2,s)
             mainMenu()
 
         elif (choice == "4"):
-            customer3 = createCustomer("customer3.csv")
+            customer3 = createCustomer("../customer3.csv")
             printCustomer(customer3,s)
             mainMenu()
 
@@ -251,11 +256,11 @@ def shopMenu(s):
             # mainMenu()
 
         elif (choice == "0"):
-            print(f"Bye {c.name}! Thank's for your custom! Come again soon!")
+            print("\n** Bye! Thanks for your custom! **\n** Come again soon! **\n")
             exit()
 
         else:
-            print("Incorrect Selection - please try again")
+            print("** Invalid entry - please enter a number between 0 and 5! **")
             mainMenu()
 
 def main():
