@@ -59,7 +59,7 @@ You can then follow the onscreen prompts.
 -------
 Credits
 -------
-The bulk of the project came from lecture with Dr. Dominic Carr. Further online research provided solutions to individual problems and issues along the way. A list of specific online resources can be found at the end of the report.
+The bulk of the project came from lectures with Dr. Dominic Carr. Further online research provided solutions to individual problems and issues along the way. A list of specific online resources can be found at the end of the report.
 
 -------
 Contact

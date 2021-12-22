@@ -1,5 +1,6 @@
 import csv
 
+# product class
 class Product:
 
     def __init__(self, name, price=0):
@@ -9,6 +10,7 @@ class Product:
     def __repr__(self):
         return f'---------------\nPRODUCT NAME: {self.name}\nPRODUCT PRICE: €{self.price:.2f}\n- - - - - - - -'
 
+# productstock class
 class ProductStock:
     
     def __init__(self, product, quantity):
@@ -27,7 +29,9 @@ class ProductStock:
     def __repr__(self):
         return f"{self.product}\nQUANTITY REQUIRED: {int(self.quantity)}\n"
 
+# customer class
 class Customer:
+
     # reads in customer csv file
     def __init__(self, path):
         self.shoppingList = []
@@ -57,9 +61,9 @@ class Customer:
         str = f"\n////////////////////////\n{self.name}'s shopping list\n////////////////////////\n\n"
         str += f"BUDGET: €{formatFloat}"
         totalBill = 0
-        for item in self.shoppingList:
-            for prod in shop.stock:
-                if item.product.name == prod.name():
+        for item in self.shoppingList: # loops through the shopping list,
+            for prod in shop.stock: # and shop stock,
+                if item.product.name == prod.name(): # and checks to see if there's a match
                     choiceName = item.product.name
                     item.product.price = prod.product.price
                     shopPrice = prod.product.price
@@ -74,10 +78,10 @@ class Customer:
                         str += f"---------------"                      
                         continue                 
                     else:
-                        totalBill += cost1
-                        self.budget -= cost1
-                        shop.cash += cost1
-                        str += f"\n{item}"
+                        totalBill += cost1 # updates bill as we go
+                        self.budget -= cost1 # updates customer budget as we go
+                        shop.cash += cost1 # updates shop cash float as we go
+                        str += f"\n{item}" # prints items in shopping list
                         str += f"- - - - - - - - \nQUANTITY PURCHASED: {QB}"
                         str += f"\nTOTAL ITEM COST: €{cost1:.2f}\n"
                         str += f"- - - - - - - -\n"
@@ -93,6 +97,7 @@ class Customer:
             
         return str 
 
+# shop class
 class Shop:
     
     # reads in stock file
@@ -146,7 +151,7 @@ class Shop:
         print("/////////////////////////////////////////\n")
         while True:
             print(f"Your current budget is €{budget:.2f}.\n\nPlease select what you would like to buy from the list below:\n")
-            for prod in self.stock:
+            for prod in self.stock: # loops through shop stock and prints out a numbered list of items
                 print(f"{shop.stock.index(prod) + 1} - {prod.product.name} @ €{prod.product.price:.2f} each")
             print("*98* - Finish shopping and print total bill")
             print("*99* - Exit Live Mode\n")
