@@ -2,7 +2,6 @@
 from dataclasses import dataclass, field
 from typing import List
 import csv
-import math
 
 # defining dataclasses for elements required in the shop
 @dataclass
@@ -61,19 +60,25 @@ def printShop(s):
         print(f"The shop has {iq} in stock")
         print("---------------")
 
+# function to check shop stock
 def checkProductStock(n,q):
     for item in s.stock:
         if n == item.product.name:
             if q <= item.quantity:
                 item.quantity = item.quantity - q
+                if item.quantity < 1:
+                    item.quantity = 0 # makes sure stock doesn't go below zero
                 return q
-            elif q > item.quantity:
-                q = int(item.quantity)
-                print("---------------")
-                print(f"** We don't have that many {n} in stock. We can only give you {q} **")
-                item.quantity = 0
+            elif q > item.quantity: # if amount required if more than available,
+                q = int(item.quantity) # customer takes total stock!
+                item.quantity = 0 
+                if q < 1:
+                    q = 0 # makes sure stock doesn't go below zero
+                    print("---------------")
+                    print(f"** We don't have that many {n} in stock. We can only give you {q} **")
                 return q
 
+# reads in customer shopping lists
 def createCustomer(file_path):
     with open(file_path) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
@@ -96,7 +101,7 @@ def liveMode():
     print("/////////////////////////////////////////\n")
     while True:
         print(f"Your current budget is €{budget:.2f}.\n\nPlease select what you would like to buy from the list below:\n")
-        for prod in s.stock:
+        for prod in s.stock: # prints stock list and prices
             print(f"{s.stock.index(prod) + 1} - {prod.product.name} @ €{prod.product.price:.2f} each")
         print("*98* - Finish shopping and print total bill")
         print("*99* - Exit Live Mode\n")
@@ -114,17 +119,14 @@ def liveMode():
             choicePrice = s.stock[choice].product.price
             choiceDetails = s.stock[choice].product
             quant = int(input(f"How many {choiceName} would you like to purchase? "))
-            QB = checkProductStock(choiceName, quant)
-            totalCost = QB * choicePrice
+            QB = checkProductStock(choiceName, quant) # check availability
+            totalCost = QB * choicePrice # calculates cost
             if budget < totalCost:
-                QB = budget / choicePrice
-                QB1 = math.floor(QB)
-                totalCost = QB1 * choicePrice
                 print(f"\n** You don't have enough money for {choiceName}! **\n")
                 continue
-            budget -= totalCost
-            totalBill += totalCost
-            s.cash += totalBill
+            budget -= totalCost # updates customer budget
+            totalBill += totalCost # updates total bill
+            s.cash += totalBill # updates shop cash float
             printProduct(choiceDetails)
 
             print(f"QUANTITY REQUIRED: {quant}")
@@ -145,22 +147,22 @@ def liveMode():
     s.cash += totalBill
     mainMenu()
 
+# prints customer
 def printCustomer(c,s):
     print("\n////////////////////////")
     print(f"{c.name}'s shopping list")
     print("////////////////////////\n")
     print(f"BUDGET: €{c.budget:.2f}")
     totalBill = 0
-    for item in c.shoppingList:
-        for prod in s.stock:
-            if item.product.name == prod.product.name:
+    for item in c.shoppingList:# loops through customer shopping list,
+        for prod in s.stock: # and shop stock
+            if item.product.name == prod.product.name: # if it finds a match....
                 choiceName = item.product.name
                 shopPrice = prod.product.price
-                # shopQuant = int(prod.quantity)
                 item.quantity = int(item.quantity)
-                QB = checkProductStock(choiceName, item.quantity)
-                cost = QB * shopPrice
-                prod.quantity -= QB
+                QB = checkProductStock(choiceName, item.quantity) # checks stock
+                cost = QB * shopPrice # calculates price
+                prod.quantity -= QB # updates stock
         if c.budget < cost:
             print(f"** Sorry! You don't have enough money left for {choiceName}! **")
             print("---------------")
@@ -191,6 +193,7 @@ def printCustomer(c,s):
 
     return c
 
+# main menu to navigate shop
 def mainMenu():
     print("\n/////////////////////")
     print("WELCOME TO THE C SHOP")
@@ -203,6 +206,7 @@ def mainMenu():
     print("5 - Shop in Live Mode")
     print("0 - Exit\n")
 
+# deals with customer choice from main menu
 def shopMenu(s):
     mainMenu()
 
@@ -229,9 +233,9 @@ def shopMenu(s):
             mainMenu()
 
         elif (choice == "5"):
-            print("\n////////////////////////////////")
+            print("\n////////////////////////////////////////////")
             print("You are now entering our LIVE SHOPPING MODE!")
-            print("////////////////////////////////")
+            print("////////////////////////////////////////////")
             liveMode()
 
         elif (choice == "0"):
@@ -242,6 +246,7 @@ def shopMenu(s):
             print("** Invalid entry - please enter a number between 0 and 5! **")
             mainMenu()
 
+# gets things rolling!
 def main():
     newShop = createAndStockShop()
     shopMenu(newShop)

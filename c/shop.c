@@ -312,9 +312,9 @@ void mainMenu(struct Shop s) {
 				break;
 			}
 			case 5:{
-                printf("\n////////////////////////////////");
+                printf("\n////////////////////////////////////////////");
 				printf("\nYou are now entering our LIVE SHOPPING MODE!\n");
-                printf("////////////////////////////////\n");
+                printf("////////////////////////////////////////////\n");
 				liveMode();
 				break;
 			}

@@ -1,5 +1,4 @@
 import csv
-import math
 
 class Product:
 
@@ -29,20 +28,20 @@ class ProductStock:
         return f"{self.product}\nQUANTITY REQUIRED: {int(self.quantity)}\n"
 
 class Customer:
-
+    # reads in customer csv file
     def __init__(self, path):
         self.shoppingList = []
         with open(path) as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             first_row = next(csv_reader)
-            self.name = first_row[0]
-            self.budget = float(first_row[1])
+            self.name = first_row[0] # finds customer name
+            self.budget = float(first_row[1]) # finds customer budget
             for row in csv_reader:
-                name = row[0]
-                quantity = float(row[1])
+                name = row[0] # finds product name
+                quantity = float(row[1]) # finds product quantity
                 p = Product(name)
                 ps = ProductStock(p, quantity)
-                self.shoppingList.append(ps) 
+                self.shoppingList.append(ps) # creates shopping list
                 
     def printCustomer(self):
         stock = shop.stock
@@ -50,7 +49,8 @@ class Customer:
             shop_item_name = i.product.name
             if shop_item_name == self.shoppingList: 
                 return i
-        
+    
+    # does main work of processing customer shopping list
     def __repr__(self):
         print('')
         formatFloat = "{:.2f}".format(self.budget)
@@ -64,17 +64,12 @@ class Customer:
                     item.product.price = prod.product.price
                     shopPrice = prod.product.price
                     item.quantity = int(item.quantity)
-                    QB = shop.checkProductStock(choiceName, item.quantity)
-                    cost1 = QB * shopPrice
+                    QB = shop.checkProductStock(choiceName, item.quantity) # checks availability
+                    cost1 = QB * shopPrice # calculates cost to be paid
                     if QB < item.quantity:
                         str += f"\n---------------"
                         str += f"\n** We don't have that much {choiceName} in stock. We only have {QB} **"                   
                     if self.budget < cost1:
-                        # QB = self.whatCanIAfford(QB)
-                        # str += f"{QB}"
-                        # QB = budget / choicePrice
-                        # QB1 = math.floor(QB)
-                        # totalCost = QB1 * item.product.price
                         str += f"\n** Sorry! You don't have enough money left for {choiceName}! **\n"
                         str += f"---------------"                      
                         continue                 
@@ -91,13 +86,7 @@ class Customer:
                         str += f"\n- - - - - - - -\n"
                         str += f"TOTAL BILL SO FAR: €{totalBill:.2f}"
                         str += "\n---------------"
-                        # if (cost1 == 0):
-                            # str += f"\nApologies\n"
-                            # continue
                     prod.quantity -= QB  
-                # else:
-                    # str += f"\nWe don't stock {item.product.name}!\n"
-                    # break
         str += f"\n\nTOTAL BILL: €{totalBill:.2f}"
         str += f"\nBUDGET REMAINING: €{self.budget:.2f}\n"
         str += f"\n** Thank you for your custom **\n"
@@ -106,17 +95,19 @@ class Customer:
 
 class Shop:
     
+    # reads in stock file
     def __init__(self, path): 
         self.stock = []
         with open(path) as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             first_row = next(csv_reader)
-            self.cash = float(first_row[0])
+            self.cash = float(first_row[0]) # finds cash float
             for row in csv_reader:
-                p = Product(row[0], float(row[1]))
-                ps = ProductStock(p, float(row[2]))
-                self.stock.append(ps)
+                p = Product(row[0], float(row[1])) # finds product name
+                ps = ProductStock(p, float(row[2])) # finds product quantity
+                self.stock.append(ps) # creates a stock list
     
+    # prints current float contents of shop
     def printShop(self):
         print("\n//////////")
         print("Stock list")
@@ -128,19 +119,25 @@ class Shop:
             print(f"The shop has {iq} in stock")
             print("---------------")
     
-    def checkProductStock(self, n, q):
-        for item in shop.stock:
-            if n == item.product.name:
-                if q <= item.quantity:
-                    item.quantity = item.quantity - q
-                    return q
-                elif q > item.quantity:
-                    q = int(item.quantity)
-                    print("---------------")
-                    print(f"** We don't have that many {n} in stock. We can only give you {q} **")
-                    item.quantity = 0
-                return q
+    # checks availability of product
+    def checkProductStock(self, n,q):
+       for item in shop.stock:
+           if n == item.product.name:
+               if q <= item.quantity:
+                   item.quantity = item.quantity - q # updates stock quantity
+                   if item.quantity < 1:
+                       item.quantity = 0 # makes sure stock quantity doesn't go below zero
+                   return q
+               elif q > item.quantity: # if amount required is more than stock available,
+                   q = int(item.quantity) # customer takes all of the stock!
+                   item.quantity = 0
+                   if q < 1:
+                       q = 0 # making sure number doesn't go below zero
+                       print("---------------")
+                       print(f"** We don't have that many {n} in stock. We can only give you {q} **")
+                   return q
 
+    # live mode
     def liveMode(self):
         budget = float(input("What is your budget? \n"))
         totalBill = 0
@@ -167,15 +164,15 @@ class Shop:
                 choicePrice = shop.stock[choice].product.price
                 choiceDetails = shop.stock[choice].product
                 quant = int(input(f"How many {choiceName} would you like to purchase? "))
-                Product(choiceDetails)
-                QB = self.checkProductStock(choiceName, quant)
-                totalCost = QB * choicePrice
+                Product(choiceDetails) # prints product details
+                QB = self.checkProductStock(choiceName, quant) # checks availability
+                totalCost = QB * choicePrice # calculates cost
                 if budget < totalCost:
                     print(f"\n** You don't have enough money for {choiceName}! **\n")
                     continue
-                budget -= totalCost
-                totalBill += totalCost
-                shop.cash += totalBill
+                budget -= totalCost # updates budget
+                totalBill += totalCost # updates total bill
+                shop.cash += totalBill # updates shop cash float
                 print(f"QUANTITY REQUIRED: {quant}")
                 print(f"QUANTITY PURCHASED: {QB}")
                 print(f"TOTAL ITEM COST: €{totalCost:.2f}")
@@ -191,9 +188,10 @@ class Shop:
                 break
             else:
                 print("** Invalid entry - please try again! **")
-        shop.cash += totalBill
+        shop.cash += totalBill # updates shop float
         mainMenu()
 
+# main menu on arrival
 def mainMenu(): 
     print("\n/////////////////////")
     print(f"WELCOME TO THE C SHOP")
@@ -206,6 +204,7 @@ def mainMenu():
     print("5 - Shop in Live Mode")
     print("0 - Exit\n")
 
+# creates variable for stock csv file
 shop = Shop("../stock.csv")
 
 def main():
@@ -231,9 +230,9 @@ def main():
             print(customer3)
             mainMenu()
         elif (choice == "5"):
-            print("\n////////////////////////////////")
+            print("\n////////////////////////////////////////////")
             print("You are now entering our LIVE SHOPPING MODE!")
-            print("////////////////////////////////")
+            print("////////////////////////////////////////////")
             shop.liveMode()
         elif (choice == "0"):
             print("\n** Bye! Thanks for your custom! **\n** Come again soon! **\n")
